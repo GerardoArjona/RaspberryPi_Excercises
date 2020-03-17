@@ -12,6 +12,7 @@ from __future__ import division
 from __future__ import print_function
 
 import smbus2
+from datetime import datetime
 from struct import *
 import time
 from itertools import count
@@ -42,10 +43,18 @@ def animate(i):
 		last = fp.readlines()[-1]
 	temp = last.split(" ")[1]
 	temp = float(temp.replace("°C","").strip())
-	x_values.append(next(index))
+	time = last.split(" ")[0]
+	time = datetime.fromtimestamp(float(time))
+	x_values.append(str(time.strftime('%H:%M:%S')))
 	y_values.append(temp)
 	plt.cla()
 	plt.plot(x_values, y_values)
+	plt.rcParams["font.size"] =11
+	plt.rcParams['xtick.major.pad'] = 8
+	plt.ylabel('Temperture °C')
+	plt.xlabel('Time')
+	plt.xticks(rotation=45)
+	plt.ylim(-5, 100)	
 
 def readTemperature():
 	try:
@@ -91,7 +100,8 @@ def main():
 			return
 		
 def graph():
-	plt.axis([0, 10, 0, 1])	
+	plt.axis([0, 10, -10, 100])
+	#plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
 	ani = FuncAnimation(plt.gcf(), animate, 1000)
 	plt.tight_layout()
 	plt.show()
